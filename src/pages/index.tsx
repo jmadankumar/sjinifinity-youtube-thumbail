@@ -11,9 +11,11 @@ import styled from "styled-components";
 import SideBar from "../components/SideBar";
 import { defaultThumbnailConfig } from "../config/thumbnail-config";
 import { ThumbailConfig } from "../types";
+import Header from "../components/header";
+import Button from "../components/commons/Button";
 
 const Wrapper = styled.div`
-  height: calc(100vh - 60px);
+  height: calc(100vh - 150px);
   aside {
     min-width: 300px;
   }
@@ -42,9 +44,11 @@ const IndexPage = ({ data }) => {
     console.log(document.querySelector("#capture"));
     html2canvas(document.querySelector("#capture")).then(canvas => {
       const img = canvas.toDataURL("image/png");
-      var image = document.createElement("img");
-      image.src = img;
-      document.body.append(image);
+      const image = document.createElement("img");
+      const link = document.createElement('a') as HTMLAnchorElement;
+      link.href= img;
+      link.download = 'thumbnail.png';
+      link.click();
     });
   };
 
@@ -54,16 +58,16 @@ const IndexPage = ({ data }) => {
   return (
     <Layout>
       <SEO title={data.site.siteMetadata.title} />
+      <Header siteTitle={data.site.siteMetadata.title} extra={
+       <Button color="danger" size="small" onClick={onSave}>Download</Button>
+      }/>
       <div className="w-full h-full overflow-hidden bg-gray-800"></div>
-      <Wrapper className="flex w-full">
+      <Wrapper className="flex w-full border-b">
         <SideBar thumbnailConfig={config} onChange={onConfigChange} />
         <div className="flex-grow p-4">
           <Thumbnail config={config}/>
         </div>
       </Wrapper>
-      {/* <img src={Svg}/> */}
-
-      <button onClick={onSave}>Save</button>
     </Layout>
   );
 };

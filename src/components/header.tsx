@@ -2,7 +2,7 @@ import { Link } from "gatsby";
 import PropTypes from "prop-types";
 import React from "react";
 
-const Header = ({ siteTitle }) => (
+const Header = ({ siteTitle, extra }) => (
   <header className="flex flex-wrap px-4 md:px-8 h-auto md:h-12 justify-between items-center border-b-1 bg-purple-600">
     <Link
       to="/"
@@ -10,6 +10,7 @@ const Header = ({ siteTitle }) => (
     >
       {siteTitle}
     </Link>
+    {extra}
   </header>
 );
 

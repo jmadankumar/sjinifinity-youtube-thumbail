@@ -2,12 +2,19 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { ThumbailConfig } from "../types";
+import {
+  createGroup,
+  createImage,
+  createRect,
+  createText,
+  createTextSpan,
+} from "../utils/svg.util";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 const ThumbnailWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: auto;
 `;
 interface ThumbnailProps {
   config: ThumbailConfig;
@@ -17,181 +24,194 @@ const getFontUnit = (size: number) => {
 };
 const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
   const { width, height, fontFamily } = config;
-  const renderChannel = () => {
-    const {
-      backgroundColor,
-      fontSize,
-      fontColor,
-      fontFamily,
-      text,
-    } = config.channel;
-    setTimeout(() => {
-      const ele = document.querySelector("#text-channel") as SVGTextElement;
 
-      console.log(ele.getBBox());
-    }, 2000);
-    return (
-      <g>
-        <rect
-          style={{ fill: backgroundColor }}
-          width="275"
-          height="34"
-          x="0"
-          y="20"
-        />
-        <text
-          x="20"
-          y="47"
-          id="text-channel"
-          fontSize={getFontUnit(fontSize)}
-          fill={fontColor}
-          fontWeight={"bold"}
-          fontFamily={fontFamily}
-        >
-          {text.toUpperCase()}
-        </text>
-      </g>
-    );
-  };
-  const renderTopic = () => {
-    const {
-      backgroundColor,
-      fontSize,
-      fontColor,
-      fontFamily,
-      y,
-      text,
-    } = config.topic;
+  const renderChannel = (svg: SVGElement) => {
+    const group = createGroup();
 
-    return (
-      <g>
-        <text x="300" y="77" style={{ fill: fontColor, fontFamily }}>
-          {text.map((name, index) => (
-            <tspan
-              x={width - (name.length * fontSize) / 2}
-              y={y + index * fontSize * 2}
-              fontSize={getFontUnit(fontSize)}
-            >
-              {name}
-            </tspan>
-          ))}
-        </text>
-      </g>
-    );
+    const text = createText(config.channel);
+    group.append(text);
+    svg.append(group);
+
+    const paddingX = config.channel.paddingX ?? 0;
+    const paddingY = config.channel.paddingY ?? 0;
+
+    const textBBox = text.getBBox();
+    config.channel.width = textBBox.width + paddingX * 2;
+    config.channel.height = textBBox.height + paddingY * 2;
+
+    text.setAttribute("width", textBBox.width + "");
+    text.setAttribute("height", textBBox.height + "");
+    text.setAttribute("x", textBBox.x + paddingX + "");
+
+    const rect = createRect(config.channel);
+    group.prepend(rect);
   };
 
-  const renderChapter = () => {
-    const {
-      backgroundColor,
-      fontSize,
-      fontColor,
-      fontFamily,
-      text,
-    } = config.chapter;
+  const renderTopic = (svg: SVGElement) => {
+    const group = createGroup();
+    const text = createText(config.topic, true);
 
-    const { y, fontSize: topicFontSize, text: topicNames } = config.topic;
+    const yAxis = config.topic.y;
+    text.setAttribute("y", yAxis + "");
+    text.setAttribute("id", "topic");
 
-    setTimeout(() => {
-      const rect = document.querySelector("#chapter-rec") as SVGTextElement;
-      const ele = document.querySelector("#text-chapter") as SVGTextElement;
-      const box = ele.getBBox();
-      console.log();
-      rect.setAttribute("width", box.width + "");
-      rect.setAttribute("height", box.height + "");
-    }, 2000);
+    (config.topic.text as Array<string>).forEach((textContext, index) => {
+      const tspan = createTextSpan(config.topic, textContext);
+      tspan.setAttribute("x", 0 + "");
+      tspan.setAttribute(
+        "y",
+        yAxis + index * (config.topic.fontSize + config.topic.paddingY) + ""
+      );
+      text.appendChild(tspan);
+    });
 
-    return (
-      <g>
-        <rect
-          style={{ fill: backgroundColor }}
-          width="275"
-          height="40"
-          x="300"
-          y={y + 30 + topicNames.length * topicFontSize}
-          id="chapter-rec"
-        />
-        <text
-          x="300"
-          y={y + 30 + topicNames.length * topicFontSize + fontSize}
-          fontSize={getFontUnit(fontSize)}
-          fill={fontColor}
-          fontFamily={fontFamily}
-          fontWeight={"bold"}
-          id="text-chapter"
-        >
-          {text.toUpperCase()}
-        </text>
-      </g>
+    group.append(text);
+
+    svg.append(group);
+
+    const textBox = text.getBBox();
+    const xAxis = config.width - textBox.width;
+    text.setAttribute("x", xAxis - config.topic.paddingX + "");
+
+    for (let i = 0; i < text.children.length; i++) {
+      const tspan = text.children[i] as SVGTSpanElement;
+      const tspanBox = tspan.getBBox();
+      tspan.setAttribute(
+        "x",
+        width - tspanBox.width - config.topic.paddingX + ""
+      );
+    }
+  };
+
+  const renderChapter = (svg: SVGElement) => {
+    const group = createGroup();
+
+    const text = createText(config.chapter);
+    group.append(text);
+    svg.append(group);
+
+    const paddingX = config.chapter.paddingX ?? 0;
+    const paddingY = config.chapter.paddingY ?? 0;
+
+    const textBBox = text.getBBox();
+    config.chapter.width = textBBox.width + paddingX * 2;
+    config.chapter.height = textBBox.height + paddingY * 2;
+
+    text.setAttribute("width", textBBox.width + "");
+    text.setAttribute("height", textBBox.height + "");
+
+    const xAxis = width - (textBBox.width + paddingX * 3);
+    text.setAttribute("x", xAxis + "");
+
+    const rect = createRect(config.chapter);
+    group.prepend(rect);
+
+    rect.setAttribute("x", xAxis - paddingX + "");
+    rect.setAttribute("id", "chapter");
+
+    const topicBBox = getTopicBBox();
+    rect.setAttribute(
+      "y",
+      topicBBox.y + topicBBox.height + config.chapter.height - paddingY * 2 + ""
+    );
+    text.setAttribute(
+      "y",
+      topicBBox.y +
+        topicBBox.height +
+        config.chapter.height -
+        paddingY * 2 +
+        config.chapter.fontSize +
+        ""
     );
   };
 
-  const renderSubject = () => {
-    const {
-      backgroundColor,
-      fontSize,
-      fontColor,
-      fontFamily,
-      text,
-    } = config.subject;
+  const getTopicBBox = () => {
+    const topicElement = document.querySelector("#topic") as SVGTextElement;
+    return topicElement.getBBox();
+  };
+  const getChapterBBox = () => {
+    const chapterElement = document.querySelector("#chapter") as SVGTextElement;
+    return chapterElement.getBBox();
+  };
+  const renderSubject = (svg: SVGElement) => {
+    const group = createGroup();
 
-    const { y, fontSize: topicFontSize, text: topicNames } = config.topic;
-    return (
-      <g>
-        <rect
-          style={{ fill: backgroundColor }}
-          width="150"
-          height="40"
-          x={width - 150 - 20}
-          y={y + 110 + topicNames.length * topicFontSize}
-        />
-        <text
-          x={width - 150 + 20}
-          y={y + 110 + topicNames.length * topicFontSize + fontSize}
-          fontSize={getFontUnit(fontSize)}
-          fill={fontColor}
-          fontFamily={fontFamily}
-          fontWeight={"bold"}
-          style={{
-            textTransform: "uppercase",
-          }}
-        >
-          {text.toUpperCase()}
-        </text>
-      </g>
+    const text = createText(config.subject);
+    group.append(text);
+    svg.append(group);
+
+    const paddingX = config.subject.paddingX ?? 0;
+    const paddingY = config.subject.paddingY ?? 0;
+
+    const textBBox = text.getBBox();
+    config.subject.width = textBBox.width + paddingX * 2;
+    config.subject.height = textBBox.height + paddingY * 2;
+
+    text.setAttribute("width", textBBox.width + "");
+    text.setAttribute("height", textBBox.height + "");
+
+    const xAxis = width - (textBBox.width + paddingX * 3);
+    text.setAttribute("x", xAxis + "");
+
+    const rect = createRect(config.subject);
+    group.prepend(rect);
+
+    rect.setAttribute("x", xAxis - paddingX + "");
+
+    const chapterBox = getChapterBBox();
+    rect.setAttribute(
+      "y",
+      chapterBox.y +
+        chapterBox.height +
+        config.subject.height -
+        paddingY * 2 +
+        ""
+    );
+    text.setAttribute(
+      "y",
+      chapterBox.y +
+        chapterBox.height +
+        config.subject.height -
+        paddingY * 2 +
+        config.subject.fontSize +
+        ""
     );
   };
 
-  const renderBackground = () => {
-    const { backgroundColor, x, y } = config;
-    return (
-      <g>
-        <rect
-          style={{ fill: backgroundColor }}
-          width={width}
-          height={height}
-          x={x}
-          y={y}
-        />
-      </g>
-    );
+  const renderBackground = (svg: SVGElement) => {
+    const group = createGroup();
+    const rect = createRect(config);
+    group.appendChild(rect);
+    svg.append(group);
   };
-  const renderImage = () => {
-    const {x,y,width,height,href} = config.image;
-    return (
-      <g>
-        <image x={x} y={y} width={width} height={height}href={href} />
-      </g>
-    );
+
+  const renderImage = (svg: SVGElement) => {
+    const group = createGroup();
+    const image = createImage(config.image);
+    group.appendChild(image);
+    svg.append(group);
+  };
+
+  const removeAllChildNodes = parent => {
+    while (parent.firstChild) {
+      parent.removeChild(parent.firstChild);
+    }
+  };
+
+  const renderSvg = () => {
+    const svg = document.querySelector("#svg") as SVGElement;
+    if (svg) {
+      removeAllChildNodes(svg);
+      renderBackground(svg);
+      renderImage(svg);
+      renderChannel(svg);
+      renderTopic(svg);
+      renderChapter(svg);
+      renderSubject(svg);
+    }
   };
   useEffect(() => {
-    const textElem = document.createElementNS(SVG_NS, "text");
-    textElem.textContent = "Test";
-    textElem.setAttribute("font-size", "19");
-    const svg = document.querySelector("#svg");
-    if (svg) {
-      svg.appendChild(textElem);
-      console.log("textElem", textElem.getBBox());
-    }
+    renderSvg();
   }, [config]);
   return (
     <ThumbnailWrapper id="capture">
@@ -202,14 +222,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
         style={{ width: "100%", height: "auto", fontFamily }}
         fontFamily={fontFamily}
         id="svg"
-      >
-        {renderBackground()}
-        {renderChannel()}
-        {renderImage()}
-        {renderTopic()}
-        {renderChapter()}
-        {renderSubject()}
-      </svg>
+      ></svg>
     </ThumbnailWrapper>
   );
 };

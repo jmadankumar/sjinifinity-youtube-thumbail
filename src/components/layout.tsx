@@ -25,12 +25,11 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata.title} />
       <div
         className="content"
       >
         <main className="main">{children}</main>
-        <footer className="text-center text-white mt-5">
+        <footer className="text-center text-black mt-5">
           <p>
             © {new Date().getFullYear()}, Built with
           {` `}
