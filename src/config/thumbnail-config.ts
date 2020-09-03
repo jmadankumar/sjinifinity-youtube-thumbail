@@ -1,11 +1,12 @@
 import { ThumbailConfig } from "../types";
 import Image from "../images/maths_learning.svg";
 
+const fontFamily = `Quicksand, sans-serif`
 export const defaultThumbnailConfig: ThumbailConfig = {
   width: 508,
   height: 285.75001,
   backgroundColor: "#feb743",
-  fontFamily: "Quicksand",
+  fontFamily,
   x: 0,
   y: 0,
   channel: {
@@ -15,7 +16,7 @@ export const defaultThumbnailConfig: ThumbailConfig = {
     x: 0,
     y: 20,
     text: "SJ INFINITY MATHS",
-    fontFamily: "Quicksand",
+    fontFamily,
     width: 0,
     height: 0,
     paddingX: 10,
@@ -29,7 +30,7 @@ export const defaultThumbnailConfig: ThumbailConfig = {
     x: 0,
     y: 0,
     text: "Maths-II",
-    fontFamily: "Quicksand",
+    fontFamily,
     width: 0,
     height: 0,
     paddingX: 10,
@@ -43,7 +44,7 @@ export const defaultThumbnailConfig: ThumbailConfig = {
     x: 0,
     y: 0,
     text: "DIFFERENTIATION",
-    fontFamily: "Quicksand",
+    fontFamily,
     width: 0,
     height: 0,
     paddingX: 10,
@@ -56,8 +57,8 @@ export const defaultThumbnailConfig: ThumbailConfig = {
     backgroundColor: "#feb743",
     x: 300,
     y: 100,
-    text: ["Parametric Differentiation ", "Exercise 1.4 Q.4"],
-    fontFamily: "Quicksand",
+    text: ["Parametric Differentiation", "Exercise 1.4 Q.4"],
+    fontFamily,
     width: 0,
     height: 0,
     paddingX: 20,

@@ -8,11 +8,11 @@ import {
   createRect,
   createText,
   createTextSpan,
+  createStyleTag,
 } from "../utils/svg.util";
 
-const SVG_NS = "http://www.w3.org/2000/svg";
-
 const ThumbnailWrapper = styled.div`
+  font-family: quicksandlight,
   width: 100%;
   height: auto;
 `;
@@ -86,12 +86,12 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
       );
     }
   };
- 
+
   const getTopicBBox = () => {
     const topicElement = document.querySelector("#topic") as SVGTextElement;
     return topicElement.getBBox();
   };
-  
+
   const renderChapter = (svg: SVGElement) => {
     const topicBBox = getTopicBBox();
     const yAxisEndoFTopic = getYAxisEndofBBox(topicBBox);
@@ -128,7 +128,6 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
     rect.setAttribute("y", yAxisEndoFTopic + config.chapter.height + "");
   };
 
- 
   const getChapterBBox = () => {
     const chapterElement = document.querySelector("#chapter") as SVGTextElement;
     return chapterElement.getBBox();
@@ -191,11 +190,20 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
       parent.removeChild(parent.firstChild);
     }
   };
-
+  const renderStyleTag = (svg: SVGElement) => {
+    const styleElem = createStyleTag(
+      `<![CDATA[
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
+    ]]>
+      `
+    );
+    svg.appendChild(styleElem);
+  };
   const renderSvg = () => {
     const svg = document.querySelector("#svg") as SVGElement;
     if (svg) {
       removeAllChildNodes(svg);
+      renderStyleTag(svg);
       renderBackground(svg);
       renderImage(svg);
       renderChannel(svg);
@@ -209,13 +217,15 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
   }, [config]);
   return (
     <ThumbnailWrapper id="capture">
+      <p className="text-3xl">Madan Kumar</p>
       <svg
         width="1920"
-        height="1020"
+        height="1080"
         viewBox={`0 0 ${width} ${height}`}
         style={{ width: "100%", height: "auto", fontFamily }}
         fontFamily={fontFamily}
         id="svg"
+        xmlns="http://www.w3.org/2000/svg"
       ></svg>
     </ThumbnailWrapper>
   );

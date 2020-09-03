@@ -12,6 +12,7 @@ import { ThumbailConfig } from "../types";
 import Header from "../components/header";
 import Button from "../components/commons/Button";
 
+//https://levelup.gitconnected.com/draw-an-svg-to-canvas-and-download-it-as-image-in-javascript-f7f7713cf81f
 const Wrapper = styled.div`
   height: calc(100vh - 150px);
   aside {
@@ -21,24 +22,70 @@ const Wrapper = styled.div`
 
 const IndexPage = ({ data }) => {
   const [config, setConfig] = useState(defaultThumbnailConfig);
+  const download = function(href, name){
+    const link = document.createElement('a');
+    link.download = name;
+    link.style.opacity = "0";
+    document.body.append(link);
+    link.href = href;
+    link.click();
+    link.remove();
+  }
+  const svgToCanvas = () => {
+    const svgElement = document.querySelector("#svg") as SVGGraphicsElement;
+    if (svgElement) {
+      const { width, height } = svgElement.getBBox();
+      const clonedSvgElement = svgElement.cloneNode(true) as Element;
+      const outerHTML = clonedSvgElement.outerHTML;
+   
+      const blob = new Blob([outerHTML], {
+        type: "image/svg+xml;charset=utf-8",
+      });
+    
+      // let URL: URL = window.URL || window.webkitURL || window;
+      let blobURL = URL.createObjectURL(blob);
+      console.log(blobURL);
+      let image = new Image();
+      image.onload = () => {
+        let canvas = document.createElement("canvas");
+
+        canvas.width = width;
+
+        canvas.height = height;
+        let context = canvas.getContext("2d");
+        // draw image in canvas starting left-0 , top - 0
+        context.font = "normal bold 30px Quicksand";
+        context.drawImage(image, 0, 0, width, height);
+        //  downloadImage(canvas); need to implement
+        
+        let png = canvas.toDataURL();
+        
+        download(png, "image.png");
+      };
+      image.onerror = (error)=>{
+        console.log(error);
+      }
+      image.src = blobURL;
+    
+    }
+
+  };
   const onSave = () => {
     // svgToCanvas(document.querySelector('#capture'));
     const elem = document.querySelector("#capture");
     console.log(elem.getElementsByTagName("svg"));
-    computedStyleToInlineStyle(document.getElementsByTagName("svg")[0], {
-      recursive: true,
-      properties: ["font-size", "font-family", "font-weight"],
-    });
 
-    console.log(document.querySelector("#capture"));
-    html2canvas(document.querySelector("#capture")).then(canvas => {
-      const img = canvas.toDataURL("image/png");
-      const image = document.createElement("img");
-      const link = document.createElement("a") as HTMLAnchorElement;
-      link.href = img;
-      link.download = "thumbnail.png";
-      link.click();
-    });
+    svgToCanvas();
+    // html2canvas(document.querySelector("#capture"), { useCORS: true }).then(
+    //   canvas => {
+    //     const img = canvas.toDataURL("image/png");
+    //     const image = document.createElement("img");
+    //     const link = document.createElement("a") as HTMLAnchorElement;
+    //     link.href = img;
+    //     link.download = "thumbnail.png";
+    //     link.click();
+    //   }
+    // );
   };
 
   const onConfigChange = (config: ThumbailConfig) => {

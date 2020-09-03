@@ -68,3 +68,12 @@ export function createTextSpan(
 
   return tspan;
 }
+
+export function createStyleTag(style: string) {
+  const defs = document.createElementNS(SVG_NS, "defs");
+  const styleElement = document.createElement("style");
+  styleElement.setAttribute("type", "text/css");
+  styleElement.appendChild(document.createTextNode(style));
+  defs.appendChild(styleElement);
+  return defs;
+}
