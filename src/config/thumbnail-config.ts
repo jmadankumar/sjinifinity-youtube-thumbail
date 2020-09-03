@@ -2,8 +2,8 @@ import { ThumbailConfig } from "../types";
 import Image from "../images/maths_learning.svg";
 
 export const defaultThumbnailConfig: ThumbailConfig = {
-  width: 580,
-  height: 285,
+  width: 508,
+  height: 285.75001,
   backgroundColor: "#feb743",
   fontFamily: "Quicksand",
   x: 0,
@@ -19,7 +19,7 @@ export const defaultThumbnailConfig: ThumbailConfig = {
     width: 0,
     height: 0,
     paddingX: 10,
-    paddingY: 5,
+    paddingY: 3,
     fontWeight: "bold",
   },
   subject: {
@@ -67,8 +67,8 @@ export const defaultThumbnailConfig: ThumbailConfig = {
   image: {
     href: Image,
     x: 20,
-    y: 95,
-    width: 180,
-    height: 180,
+    y: 110,
+    width: 160,
+    height: 160,
   },
 };

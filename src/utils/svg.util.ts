@@ -32,8 +32,11 @@ export function createText(
   text.setAttribute("y", shape.y + shape.fontSize + paddingY + "");
   text.setAttribute("font-size", shape.fontSize + "");
   text.setAttribute("font-family", shape.fontFamily);
-  text.setAttribute("font-weight", "bold");
+  text.setAttribute("font-weight", shape.fontWeight);
   text.setAttribute("fill", shape.fontColor);
+  text.style.fontFamily = shape.fontFamily;
+  text.style.fontSize = shape.fontSize + "px";
+  text.style.fontWeight = shape.fontWeight;
 
   if (!isEmpty) {
     text.textContent = shape.text as string;
@@ -53,12 +56,15 @@ export function createTextSpan(
 ): SVGTSpanElement {
   const tspan = document.createElementNS(SVG_NS, "tspan");
   const paddingY = shape.paddingY ?? 0;
-  tspan.setAttribute("y", shape.y + shape.fontSize + paddingY + "");
+  tspan.setAttribute("y", shape.y + shape.fontSize + paddingY * 2 + "");
   tspan.setAttribute("font-size", shape.fontSize + "");
   tspan.setAttribute("font-family", shape.fontFamily);
   tspan.setAttribute("font-weight", shape.fontWeight);
   tspan.setAttribute("fill", shape.fontColor);
   tspan.textContent = text;
+  tspan.style.fontFamily = shape.fontFamily;
+  tspan.style.fontSize = shape.fontSize + "px";
+  tspan.style.fontWeight = shape.fontWeight;
 
   return tspan;
 }

@@ -25,6 +25,10 @@ const getFontUnit = (size: number) => {
 const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
   const { width, height, fontFamily } = config;
 
+  const getYAxisEndofBBox = (bbox: DOMRect) => {
+    return bbox.y + bbox.height;
+  };
+
   const renderChannel = (svg: SVGElement) => {
     const group = createGroup();
 
@@ -82,8 +86,16 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
       );
     }
   };
-
+ 
+  const getTopicBBox = () => {
+    const topicElement = document.querySelector("#topic") as SVGTextElement;
+    return topicElement.getBBox();
+  };
+  
   const renderChapter = (svg: SVGElement) => {
+    const topicBBox = getTopicBBox();
+    const yAxisEndoFTopic = getYAxisEndofBBox(topicBBox);
+
     const group = createGroup();
 
     const text = createText(config.chapter);
@@ -97,43 +109,35 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
     config.chapter.width = textBBox.width + paddingX * 2;
     config.chapter.height = textBBox.height + paddingY * 2;
 
-    text.setAttribute("width", textBBox.width + "");
-    text.setAttribute("height", textBBox.height + "");
-
     const xAxis = width - (textBBox.width + paddingX * 3);
     text.setAttribute("x", xAxis + "");
+    text.setAttribute(
+      "y",
+      yAxisEndoFTopic +
+        config.chapter.height +
+        config.chapter.fontSize +
+        paddingY +
+        ""
+    );
 
     const rect = createRect(config.chapter);
     group.prepend(rect);
 
     rect.setAttribute("x", xAxis - paddingX + "");
     rect.setAttribute("id", "chapter");
-
-    const topicBBox = getTopicBBox();
-    rect.setAttribute(
-      "y",
-      topicBBox.y + topicBBox.height + config.chapter.height - paddingY * 2 + ""
-    );
-    text.setAttribute(
-      "y",
-      topicBBox.y +
-        topicBBox.height +
-        config.chapter.height -
-        paddingY * 2 +
-        config.chapter.fontSize +
-        ""
-    );
+    rect.setAttribute("y", yAxisEndoFTopic + config.chapter.height + "");
   };
 
-  const getTopicBBox = () => {
-    const topicElement = document.querySelector("#topic") as SVGTextElement;
-    return topicElement.getBBox();
-  };
+ 
   const getChapterBBox = () => {
     const chapterElement = document.querySelector("#chapter") as SVGTextElement;
     return chapterElement.getBBox();
   };
+
   const renderSubject = (svg: SVGElement) => {
+    const chapterBox = getChapterBBox();
+    const yAxisEndoFTopic = getYAxisEndofBBox(chapterBox);
+
     const group = createGroup();
 
     const text = createText(config.subject);
@@ -152,30 +156,20 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
 
     const xAxis = width - (textBBox.width + paddingX * 3);
     text.setAttribute("x", xAxis + "");
+    text.setAttribute(
+      "y",
+      yAxisEndoFTopic +
+        config.subject.height +
+        config.subject.fontSize +
+        paddingY +
+        ""
+    );
 
     const rect = createRect(config.subject);
     group.prepend(rect);
 
     rect.setAttribute("x", xAxis - paddingX + "");
-
-    const chapterBox = getChapterBBox();
-    rect.setAttribute(
-      "y",
-      chapterBox.y +
-        chapterBox.height +
-        config.subject.height -
-        paddingY * 2 +
-        ""
-    );
-    text.setAttribute(
-      "y",
-      chapterBox.y +
-        chapterBox.height +
-        config.subject.height -
-        paddingY * 2 +
-        config.subject.fontSize +
-        ""
-    );
+    rect.setAttribute("y", yAxisEndoFTopic + config.subject.height + "");
   };
 
   const renderBackground = (svg: SVGElement) => {
