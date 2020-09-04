@@ -6,6 +6,7 @@
   "author": "Madan Kumar<kumarmadan.j@gmail.com>",
   "dependencies": {
     "@loadable/component": "^5.13.1",
+    "@types/css-font-loading-module": "^0.0.4",
     "classnames": "^2.2.6",
     "computed-style-to-inline-style": "^3.0.0",
     "gatsby": "^2.23.12",

@@ -217,7 +217,6 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ config }) => {
   }, [config]);
   return (
     <ThumbnailWrapper id="capture">
-      <p className="text-3xl">Madan Kumar</p>
       <svg
         width="1920"
         height="1080"

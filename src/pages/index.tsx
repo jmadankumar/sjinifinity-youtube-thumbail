@@ -22,53 +22,60 @@ const Wrapper = styled.div`
 
 const IndexPage = ({ data }) => {
   const [config, setConfig] = useState(defaultThumbnailConfig);
-  const download = function(href, name){
-    const link = document.createElement('a');
+  const download = function (href, name) {
+    const link = document.createElement("a");
     link.download = name;
     link.style.opacity = "0";
     document.body.append(link);
     link.href = href;
     link.click();
     link.remove();
-  }
+  };
   const svgToCanvas = () => {
     const svgElement = document.querySelector("#svg") as SVGGraphicsElement;
     if (svgElement) {
-      const { width, height } = svgElement.getBBox();
+      // const { width, height } = svgElement.getBBox();
+      const width = 1920;
+      const height = 1080;
       const clonedSvgElement = svgElement.cloneNode(true) as Element;
       const outerHTML = clonedSvgElement.outerHTML;
-   
+
       const blob = new Blob([outerHTML], {
         type: "image/svg+xml;charset=utf-8",
       });
-    
+
       // let URL: URL = window.URL || window.webkitURL || window;
       let blobURL = URL.createObjectURL(blob);
       console.log(blobURL);
       let image = new Image();
       image.onload = () => {
-        let canvas = document.createElement("canvas");
+        const font = new FontFace(
+          "QuickSand",
+          `url(https://fonts.gstatic.com/s/quicksand/v21/6xKtdSZaM9iE8KbpRA_hJVQNcOM.woff2)`
+        );
+        font.load().then(() => {
+          let canvas = document.createElement("canvas");
 
-        canvas.width = width;
+          canvas.width = width;
 
-        canvas.height = height;
-        let context = canvas.getContext("2d");
-        // draw image in canvas starting left-0 , top - 0
-        context.font = "normal bold 30px Quicksand";
-        context.drawImage(image, 0, 0, width, height);
-        //  downloadImage(canvas); need to implement
-        
-        let png = canvas.toDataURL();
-        
-        download(png, "image.png");
+          canvas.height = height;
+
+          let context = canvas.getContext("2d");
+          // draw image in canvas starting left-0 , top - 0
+          context.font = "normal bold 30px Quicksand";
+          context.drawImage(image, 0, 0, width, height);
+          //  downloadImage(canvas); need to implement
+
+          let png = canvas.toDataURL();
+
+          download(png, "image.png");
+        });
       };
-      image.onerror = (error)=>{
+      image.onerror = error => {
         console.log(error);
-      }
+      };
       image.src = blobURL;
-    
     }
-
   };
   const onSave = () => {
     // svgToCanvas(document.querySelector('#capture'));
@@ -76,16 +83,22 @@ const IndexPage = ({ data }) => {
     console.log(elem.getElementsByTagName("svg"));
 
     svgToCanvas();
-    // html2canvas(document.querySelector("#capture"), { useCORS: true }).then(
-    //   canvas => {
-    //     const img = canvas.toDataURL("image/png");
-    //     const image = document.createElement("img");
-    //     const link = document.createElement("a") as HTMLAnchorElement;
-    //     link.href = img;
-    //     link.download = "thumbnail.png";
-    //     link.click();
-    //   }
+    // const font = new FontFace(
+    //   "QuickSand",
+    //   `url(https://fonts.gstatic.com/s/quicksand/v21/6xKtdSZaM9iE8KbpRA_hJVQNcOM.woff2)`
     // );
+    // font.load().then(() => {
+    //   html2canvas(document.querySelector("#capture"), { useCORS: true }).then(
+    //     canvas => {
+    //       const img = canvas.toDataURL("image/png");
+    //       const image = document.createElement("img");
+    //       const link = document.createElement("a") as HTMLAnchorElement;
+    //       link.href = img;
+    //       link.download = "thumbnail.png";
+    //       link.click();
+    //     }
+    //   );
+    // });
   };
 
   const onConfigChange = (config: ThumbailConfig) => {

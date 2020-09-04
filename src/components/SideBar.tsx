@@ -75,9 +75,9 @@ const SideBar: React.FC<SideBarProps> = ({ onChange, thumbnailConfig }) => {
                 value={text}
               />
               <svg
-                height="512pt"
+                height="64"
                 viewBox="0 0 512 512"
-                width="512pt"
+                width="64"
                 xmlns="http://www.w3.org/2000/svg"
                 onClick={() => removeTopic(index)}
                 className="cursor-pointer w-8 h-8"
